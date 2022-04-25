@@ -42,7 +42,8 @@
 
     <button id="upbtn">Up Counter</button>
     <button id="downbtn">Down Counter</button>
-    <button id="resetbtn">Reset</button>
+    <!--<button id="resetbtn">Reset</button>-->
+    <input name="resetbtn" onclick="reset()" type="button" value="Reset" />
 
     <p>
         Scale Display: <span id="display">0</span> grams
@@ -118,7 +119,7 @@
             var msg = new SpeechSynthesisUtterance('Whoop. Whoop. Possible Spill. Check Surroundings.');
             window.speechSynthesis.speak(msg);
         }
-        resetbtn.onclick = function () {
+        function reset() {
             count = 0;
             upLimit = 0;
             disp.innerHTML = count;
@@ -142,7 +143,7 @@
             if (event.key === 'Enter') {
                 setUpper(ele.value);
             }
-            
+
         }
 
         //function overLimitVoice() {
@@ -183,7 +184,7 @@
                         } else {
                             break;
                         }
-                        
+
                     }
                 }
             }
@@ -202,19 +203,18 @@
                 statusText.innerHTML = "End of Array";
                 var msg = new SpeechSynthesisUtterance('End of Recipe. Enjoy your drink.');
                 window.speechSynthesis.speak(msg);
-                ingredientArray = [];
-                arrayCounter = 0;
+                reset();
             }
-            
+
         }
-        
-        //function checkFlag() {
-        //    if (flag === false) {
-        //        window.setTimeout(checkFlag, 100); /* this checks the flag every 100 milliseconds*/
-        //    } else {
-        //        /* do something*/
-        //    }
-        //}
+
+            //function checkFlag() {
+            //    if (flag === false) {
+            //        window.setTimeout(checkFlag, 100); /* this checks the flag every 100 milliseconds*/
+            //    } else {
+            //        /* do something*/
+            //    }
+            //}
 
     </script>
 
