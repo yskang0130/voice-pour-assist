@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Voice Indicator based on number of count</title>
+    <style>
+        .column {
+            float: left;
+            width: 24%;
+            padding: 5px;
+        }
+
+        /* Clear floats after image containers */
+        .row::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+
+<body style="text-align: center;">
+    <h1 style="color: black;">
+        Voice Indicator based on Scale
+    </h1>
+
+    <h3>
+        Set Fields
+    </h3>
+    <label for="fname">Beep when # is over:</label>
+    <input type="text" id="textbox1" name="textbox1" onkeydown="setWithEnter(this)">
+    <input name="setbtn" onclick="setUpper(document.getElementsByName('textbox1')[0].value)" type="button" value="Set" />
+    <br />
+    <br />
+    Current Set Value: <span id="setValue">None</span>
+    <br />
+
+
+    <h3>
+        Scale
+    </h3>
+
+    <button id="upbtn">Up Counter</button>
+    <button id="downbtn">Down Counter</button>
+    <button id="resetbtn">Reset</button>
+
+    <p>
+        Scale Display: <span id="display">0</span> grams
+        <br />
+
+        <br />
+        Status: <span id="statusDisplay">Running...</span>
+    </p>
+
+    <h3>
+        Load A Recipe
+    </h3>
+    <div class='row'>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Mojito');"><div><img src='https://www.thecocktaildb.com/images/media/drink/metwgh1606770327.jpg' style="width:95%" /></div>Mojito</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Water');"><div><img src='water.jpeg' style="width:95%" /></div>Water</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Long Island Tea');"><div><img src='https://www.thecocktaildb.com/images/media/drink/nkwr4c1606770558.jpg' style="width:95%" /></div>Long Island Tea</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Negroni');"><div><img src='https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg' style="width:95%" /></div>Negroni</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Whiskey Sour');"><div><img src='https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg' style="width:95%" /></div>Whiskey Sour</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Dry Martini');"><div><img src='https://www.thecocktaildb.com/images/media/drink/6ck9yi1589574317.jpg' style="width:95%" /></div>Dry Martini</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Daiquiri');"><div><img src='https://www.thecocktaildb.com/images/media/drink/mrz9091589574515.jpg' style="width:95%" /></div>Daiquiri</a><br><br>
+        </div>
+        <div class='column'>
+            <a href="javascript:loadRecipe('Margarita');"><div><img src='https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg' style="width:95%" /></div>Margarita</a><br><br>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var count = 0;
+        var upbtn = document.getElementById("upbtn");
+        var downbtn = document.getElementById("downbtn");
+        var resetbtn = document.getElementById("resetbtn");
+        var disp = document.getElementById("display");
+        var statusText = document.getElementById("statusDisplay");
+        var setValue = document.getElementById("setValue");
+        var upLimit = 0;
+        /*var flag = false;*/
+        var ingredientArray = [];
+        var arrayCounter = 0;
+
+        upbtn.onclick = function () {
+            count = count + 5;
+            disp.innerHTML = count;
+            if (count == upLimit) {
+                statusText.innerHTML = "Reached Set Value";
+                var msg = new SpeechSynthesisUtterance('Stop. Reached set value.');
+                window.speechSynthesis.speak(msg);
+                /*flag = true;*/
+                nextInArray();
+                count = 0;
+            }
+            if (count > upLimit) {
+                statusText.innerHTML = "Over Set Value";
+                var msg = new SpeechSynthesisUtterance('Stop. Over set value. Overflow Warning.');
+                window.speechSynthesis.speak(msg);
+            }
+        }
+        downbtn.onclick = function () {
+            count--;
+            disp.innerHTML = count;
+            var msg = new SpeechSynthesisUtterance('Whoop. Whoop. Possible Spill. Check Surroundings.');
+            window.speechSynthesis.speak(msg);
+        }
+        resetbtn.onclick = function () {
+            count = 0;
+            upLimit = 0;
+            disp.innerHTML = count;
+            setValue.innerHTML = "None";
+            statusText.innerHTML = "Running...";
+            ingredientArray = [];
+            arrayCounter = 0;
+            var msg = new SpeechSynthesisUtterance('All functions are reset.');
+            window.speechSynthesis.speak(msg);
+        }
+
+        function setUpper(limit) {
+            upLimit = limit;
+            setValue.innerHTML = upLimit;
+            const prompt = "Limit is Set to " + upLimit + "grams. Start pouring slowly."
+            var msg = new SpeechSynthesisUtterance(prompt);
+            window.speechSynthesis.speak(msg);
+        }
+
+        function setWithEnter(ele) {
+            if (event.key === 'Enter') {
+                setUpper(ele.value);
+            }
+            
+        }
+
+        //function overLimitVoice() {
+        //    statusText.innerHTML = "Reached Set Value";
+        //    var msg = new SpeechSynthesisUtterance('Stop. Reached set value.');
+        //    window.speechSynthesis.speak(msg);
+        //}
+
+        function addVoicePrompt(name, measure) {
+            const prompt = 'Add' + measure + ' grams of ' + name;
+            var msg = new SpeechSynthesisUtterance(prompt);
+            window.speechSynthesis.speak(msg);
+        }
+
+        async function loadRecipe(recipeName) {
+            const response = await fetch('data.json');
+            const json = await response.json();
+            console.log(json);
+            setRecipeLimits(json, recipeName);
+            nextInArray();
+        }
+
+        function setRecipeLimits(data, name) {
+            for (i = 0; i < 20; i++) {
+                if (data.drinks[i].strDrink == name) {
+                    console.log("found drink");
+                    for (j = 0; j < 10; j++) {
+                        if (data.drinks[i].ingredient[j] != null) {
+                            console.log(data.drinks[i].ingredient[j]);
+                            /*recipeFlow(data.drinks[i].ingredient[j].name, data.drinks[i].ingredient[j].measure);*/
+                            ingredientArray[j] = data.drinks[i].ingredient[j];
+                            console.log("this is the array");
+                            console.log(ingredientArray);
+                        } else {
+                            break;
+                        }
+                        
+                    }
+                }
+            }
+        }
+
+        function recipeFlow(name, measure) {
+            setUpper(measure);
+            addVoicePrompt(name, measure);
+        }
+
+        function nextInArray() {
+            if (ingredientArray[arrayCounter] != null) {
+                recipeFlow(ingredientArray[arrayCounter].name, ingredientArray[arrayCounter].measure);
+                arrayCounter++;
+            } else {
+                statusText.innerHTML = "End of Array";
+                var msg = new SpeechSynthesisUtterance('End of Recipe. Enjoy your drink.');
+                window.speechSynthesis.speak(msg);
+                ingredientArray = [];
+                arrayCounter = 0;
+            }
+            
+        }
+        
+        //function checkFlag() {
+        //    if (flag === false) {
+        //        window.setTimeout(checkFlag, 100); /* this checks the flag every 100 milliseconds*/
+        //    } else {
+        //        /* do something*/
+        //    }
+        //}
+
+    </script>
+
+
+</body>
+</html>
