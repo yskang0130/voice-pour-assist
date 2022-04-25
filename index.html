@@ -172,6 +172,7 @@
                     const prompt = "Recipe for " + name + " will start shortly."
                     var msg = new SpeechSynthesisUtterance(prompt);
                     window.speechSynthesis.speak(msg);
+                    console.log(prompt);
                     for (j = 0; j < 10; j++) {
                         if (data.drinks[i].ingredient[j] != null) {
                             console.log(data.drinks[i].ingredient[j]);
